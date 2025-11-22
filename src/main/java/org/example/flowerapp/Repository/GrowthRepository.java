@@ -1,5 +1,6 @@
 package org.example.flowerapp.Repository;
 
+import org.example.flowerapp.Exceptions.EntityNotFoundExceptions.GrowthNotFoundException;
 import org.example.flowerapp.Models.Enums.GrowthStage;
 import org.example.flowerapp.Models.Flower;
 import org.example.flowerapp.Models.Growth;
@@ -39,7 +40,7 @@ public class GrowthRepository {
         try {
             return jdbc.queryForObject(sql, new Object[]{id}, growthRowMapper());
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            throw new GrowthNotFoundException(id);
         }
     }
 
@@ -65,7 +66,12 @@ public class GrowthRepository {
 
     public boolean deleteGrowth(long id) {
         String sql = "DELETE FROM growthdetails WHERE growth_id = ?";
-        return jdbc.update(sql, id) != 0;
+        int rowsAffected = jdbc.update(sql, id);
+        if (rowsAffected == 0) {
+            throw new GrowthNotFoundException(id);
+        }
+
+        return true;
     }
 
     private Growth insert(Growth growth) {

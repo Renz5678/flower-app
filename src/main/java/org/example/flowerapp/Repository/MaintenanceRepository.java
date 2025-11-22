@@ -1,5 +1,6 @@
 package org.example.flowerapp.Repository;
 
+import org.example.flowerapp.Exceptions.EntityNotFoundExceptions.MaintenanceNotFoundException;
 import org.example.flowerapp.Models.Enums.MaintenanceType;
 import org.example.flowerapp.Models.Flower;
 import org.example.flowerapp.Models.Maintenance;
@@ -41,7 +42,7 @@ public class MaintenanceRepository {
         try {
             return jdbc.queryForObject(sql, new Object[]{taskId}, maintenanceRowMapper());
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            throw new MaintenanceNotFoundException(taskId);
         }
     }
 

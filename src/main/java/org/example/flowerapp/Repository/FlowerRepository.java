@@ -1,5 +1,6 @@
 package org.example.flowerapp.Repository;
 
+import org.example.flowerapp.Exceptions.EntityNotFoundExceptions.FlowerNotFoundException;
 import org.example.flowerapp.Models.Enums.FlowerColor;
 import org.example.flowerapp.Models.Flower;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -37,7 +38,7 @@ public class FlowerRepository {
         try {
             return jdbc.queryForObject(sql, new Object[]{flowerId}, flowerRowMapper());
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            throw new FlowerNotFoundException(flowerId);
         }
     }
 
@@ -58,7 +59,12 @@ public class FlowerRepository {
 
     public boolean deleteFlower(long id) {
         String sql = "DELETE FROM flowerdetails WHERE flower_id = ?";
-        return jdbc.update(sql, id) != 0;
+        int rowsAffected = jdbc.update(sql, id);
+        if (rowsAffected == 0) {
+            throw new FlowerNotFoundException(id);
+        }
+
+        return true;
     }
 
     public long count() {
