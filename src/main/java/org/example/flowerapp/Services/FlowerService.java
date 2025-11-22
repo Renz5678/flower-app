@@ -1,8 +1,7 @@
 package org.example.flowerapp.Services; 
 
-import org.example.flowerapp.Models.Enums.FlowerColor;
-import org.example.flowerapp.Exceptions.DuplicateEntryException;
-import org.example.flowerapp.Exceptions.ResourceNotFoundException;
+import org.example.flowerapp.Exceptions.BusinessLogicExceptions.DuplicateFlowerException;
+import org.example.flowerapp.Exceptions.EntityNotFoundExceptions.FlowerNotFoundException;
 import org.example.flowerapp.Models.Flower;
 import org.example.flowerapp.Repository.FlowerRepository;
 import org.example.flowerapp.Utils.Validators.FlowerValidator;
@@ -28,7 +27,7 @@ public class FlowerService {
     public Flower getFlowerById(long id) {
         Flower f = flowerRepository.findByFlowerId(id);
         if (f == null) {
-            throw new ResourceNotFoundException("Flower", id);
+            throw new FlowerNotFoundException(id);
         }
         return f;
     }
@@ -67,7 +66,7 @@ public class FlowerService {
         return flowerRepository.findBySpecies(species);
     }
 
-    public List<Flower> getByColor(FlowerColor color) {
+    public List<Flower> getByColor(String color) {
         return flowerRepository.findByColor(color);
     }
 
@@ -83,7 +82,7 @@ public class FlowerService {
             .count();
 
         if (count > 0) {
-            throw new DuplicateEntryException(flower.getFlowerName(), flower.getSpecies(), flower.getPlantingDate());
+            throw new DuplicateFlowerException("The Flower already exists in the system.");
         }
     }
 }

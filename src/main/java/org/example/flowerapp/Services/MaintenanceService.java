@@ -65,20 +65,14 @@ public class MaintenanceService {
     }
 
     public List<Maintenance> getTasksByFlower(Flower flower) {
-        Maintenance filter = new Maintenance();
-        filter.setFlower(flower);
-        return maintenanceRepository.findByFlowerId(filter);
+        return maintenanceRepository.findByFlowerId(flower.getFlower_id());
     }
 
     public List<Maintenance> getTasksByType(MaintenanceType type) {
-        Maintenance filter = new Maintenance();
-        filter.setTaskType(type);
-        return maintenanceRepository.findByMaintenanceType(filter);
+        return maintenanceRepository.findByMaintenanceType(type);
     }
-    
+
     public List<Maintenance> getTasksByDate(LocalDateTime scheduledDate) {
-        Maintenance filter = new Maintenance();
-        filter.setScheduledDate(scheduledDate);
-        return maintenanceRepository.findByMaintenanceDate(filter);
+        return maintenanceRepository.findByMaintenanceDate(scheduledDate);
     }
 }
