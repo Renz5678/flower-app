@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.flowerapp.Models.Enums.FlowerColor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -31,5 +32,5 @@ public class Flower {
     private FlowerColor color;
 
     @Column(name="planting_date")
-    private Date plantingDate;
+    private LocalDateTime plantingDate;
 }

@@ -16,4 +16,13 @@ public enum GrowthStage {
     public String getGrowthStage() {
         return this.growthStage;
     }
+
+    public static GrowthStage fromString(String text) {
+        for (GrowthStage stage : GrowthStage.values()) {
+            if (stage.growthStage.equalsIgnoreCase(text)) {
+                return stage;
+            }
+        }
+        throw new IllegalArgumentException("No enum constant for: " + text);
+    }
 }

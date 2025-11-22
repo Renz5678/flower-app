@@ -26,7 +26,7 @@ public class FlowerService {
     }
 
     public Flower getFlowerById(long id) {
-        Flower f = flowerRepository.findById(id);
+        Flower f = flowerRepository.findByFlowerId(id);
         if (f == null) {
             throw new ResourceNotFoundException("Flower", id);
         }

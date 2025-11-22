@@ -1,13 +1,11 @@
 package org.example.flowerapp.Models.Enums;
 
-import org.example.flowerapp.Models.Maintenance;
-
 public enum MaintenanceType {
-    WATER("Water"),
-    FERTILIZE("Fertilize"),
-    REPOT("Repot"),
-    PEST_CHECK("Check for pests"),
-    PRUNING("Prune branches");
+    WATERING("Watering"),
+    FERTILIZING("Fertilize"),
+    PRUNING("Pruning"),
+    PEST_CONTROL("Pest Control"),
+    REPOTTING("Repotting");
 
     private final String maintenanceType;
 
@@ -16,6 +14,15 @@ public enum MaintenanceType {
     }
 
     public String getMaintenanceType() {
-        return this.maintenanceType;
+        return maintenanceType;
+    }
+
+    public static MaintenanceType fromString(String text) {
+        for (MaintenanceType type : MaintenanceType.values()) {
+            if (type.maintenanceType.equalsIgnoreCase(text)) {
+                return type;
+            }
+        }
+        throw new IllegalArgumentException("No enum constant for: " + text);
     }
 }
