@@ -1,7 +1,6 @@
 package org.example.flowerapp.Services; 
 
 import org.example.flowerapp.Exceptions.BusinessLogicExceptions.DuplicateFlowerException;
-import org.example.flowerapp.Exceptions.EntityNotFoundExceptions.FlowerNotFoundException;
 import org.example.flowerapp.Models.Flower;
 import org.example.flowerapp.Repository.FlowerRepository;
 import org.example.flowerapp.Utils.Validators.FlowerValidator;
@@ -25,11 +24,7 @@ public class FlowerService {
     }
 
     public Flower getFlowerById(long id) {
-        Flower f = flowerRepository.findByFlowerId(id);
-        if (f == null) {
-            throw new FlowerNotFoundException(id);
-        }
-        return f;
+        return flowerRepository.findByFlowerId(id);
     }
 
     public List<Flower> getAllFlowers() {
@@ -58,7 +53,6 @@ public class FlowerService {
     }
 
     public boolean deleteFlower(long id) {
-        getFlowerById(id); 
         return flowerRepository.deleteFlower(id);
     }
 
@@ -71,11 +65,7 @@ public class FlowerService {
     }
 
     private void checkDuplicateDB(Flower flower, boolean isUpdate) {
-        List<Flower> duplicates = flowerRepository.findDuplicates(
-            flower.getFlowerName(), 
-            flower.getSpecies(), 
-            flower.getPlantingDate()
-        );
+        List<Flower> duplicates = flowerRepository.findDuplicates(flower.getFlowerName(), flower.getSpecies(), flower.getPlantingDate());
 
         long count = duplicates.stream()
             .filter(f -> !isUpdate || f.getFlower_id() != flower.getFlower_id())
