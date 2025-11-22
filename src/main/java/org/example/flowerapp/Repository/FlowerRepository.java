@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -120,5 +121,10 @@ public class FlowerRepository {
 
             return flower;
         };
+    }
+    public List<Flower> findDuplicates(String name, String species, LocalDateTime plantingDate) {
+        String sql = "SELECT * FROM flowerdetails WHERE flower_name = ? AND species = ? AND planting_date = ?";
+        java.sql.Timestamp sqlTimestamp = (plantingDate != null) ? java.sql.Timestamp.valueOf(plantingDate) : null;
+        return jdbc.query(sql, flowerRowMapper(), name, species, sqlTimestamp);
     }
 }
