@@ -1,6 +1,8 @@
 package org.example.flowerapp.Services; 
 
 import org.example.flowerapp.Models.Enums.FlowerColor;
+import org.example.flowerapp.Exceptions.DuplicateEntryException;
+import org.example.flowerapp.Exceptions.ResourceNotFoundException;
 import org.example.flowerapp.Models.Flower;
 import org.example.flowerapp.Repository.FlowerRepository;
 import org.example.flowerapp.Utils.Validators.FlowerValidator;
@@ -26,7 +28,7 @@ public class FlowerService {
     public Flower getFlowerById(long id) {
         Flower f = flowerRepository.findById(id);
         if (f == null) {
-            throw new IllegalArgumentException("Flower with ID " + id + " not found.");
+            throw new ResourceNotFoundException("Flower", id);
         }
         return f;
     }
@@ -81,9 +83,7 @@ public class FlowerService {
             .count();
 
         if (count > 0) {
-            throw new IllegalArgumentException(
-                "Duplicate flower: same name, species, and planting date already exist."
-            );
+            throw new DuplicateEntryException(flower.getFlowerName(), flower.getSpecies(), flower.getPlantingDate());
         }
     }
 }

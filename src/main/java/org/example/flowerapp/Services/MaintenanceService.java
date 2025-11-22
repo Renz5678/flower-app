@@ -1,6 +1,7 @@
 package org.example.flowerapp.Services;
 
 import org.example.flowerapp.Models.Enums.MaintenanceType;
+import org.example.flowerapp.Exceptions.ResourceNotFoundException;
 import org.example.flowerapp.Models.Flower;
 import org.example.flowerapp.Models.Maintenance;
 import org.example.flowerapp.Repository.MaintenanceRepository;
@@ -31,7 +32,7 @@ public class MaintenanceService {
         Maintenance m = maintenanceRepository.findByTaskId(id);
 
         if (m == null) {
-            throw new IllegalArgumentException("Maintenance task with ID " + id + " not found.");
+            throw new ResourceNotFoundException("Flower", id);
         }
         return m;
     }
