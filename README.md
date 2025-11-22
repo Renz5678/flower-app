@@ -29,17 +29,11 @@ Contains the objects and enums that define the core data structures of the appli
 
 ### 2. `controller/`
 
-This layer will be responsible for handling incoming HTTP requests and routing them to the appropriate services.
-
-- 'FlowerController'
-- 'MaintenanceController'
+Currently empty, but this layer will be responsible for handling incoming HTTP requests and routing them to the appropriate services.
 
 ### 3. `services/`
 
-This layer will contain the business logic of the application. Services will act as an intermediary between controllers and repositories.
-
-- 'FlowerService'
-- 'MaintenanceService'
+Currently empty, but this layer will contain the business logic of the application. Services will act as an intermediary between controllers and repositories.
 
 ### 4. `repository/`
 
@@ -53,9 +47,4 @@ Repositories provide data access methods that will be called by the service laye
 
 ### 5. `exceptions/`
 
-This folder will be used to define custom exceptions to handle error scenarios in the application.
-
-- 'DuplicateEntryException'
-- 'InvalidDateException'
-- 'InvalidInputException'
-- 'ResourceNotFoundException'
+Currently empty, but this folder will be used to define custom exceptions to handle error scenarios in the application.
