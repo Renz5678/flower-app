@@ -85,6 +85,12 @@ public class FlowerRepository {
         return jdbc.query(sql, flowerRowMapper());
     }
 
+    public List<Flower> findDuplicates(String name, String species, java.util.Date plantingDate) {
+        String sql = "SELECT * FROM flowerdetails WHERE flower_name = ? AND species = ? AND planting_date = ?";
+        java.sql.Date sqlDate = plantingDate != null ? new java.sql.Date(plantingDate.getTime()) : null;
+        return jdbc.query(sql, flowerRowMapper(), name, species, sqlDate);
+    }
+
     public Flower findById(long flowerId) {
         String sql = "SELECT * FROM flowerdetails WHERE flower_id = ?";
 
