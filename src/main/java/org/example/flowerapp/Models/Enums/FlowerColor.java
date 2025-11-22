@@ -16,4 +16,13 @@ public enum FlowerColor {
     public String getColorName() {
         return this.displayName;
     }
+
+    public static FlowerColor fromString(String text) {
+        for (FlowerColor color : FlowerColor.values()) {
+            if (color.displayName.equalsIgnoreCase(text)) {
+                return color;
+            }
+        }
+        throw new IllegalArgumentException("No enum constant for: " + text);
+    }
 }

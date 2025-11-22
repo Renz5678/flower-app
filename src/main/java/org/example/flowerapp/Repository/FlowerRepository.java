@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,46 +23,65 @@ public class FlowerRepository {
         this.jdbc = jdbcTemplate;
     }
 
-    private RowMapper<Flower> flowerRowMapper() {
-        return(rs, i) -> {
-            Flower flower = new Flower();
-
-            flower.setFlower_id(rs.getLong("flower_id"));
-            flower.setFlowerName(rs.getString("flower_name"));
-            flower.setSpecies(rs.getString("species"));
-            String colorStr = rs.getString("color");
-            flower.setColor(colorStr != null ? FlowerColor.valueOf(colorStr) : null);
-            flower.setPlantingDate(rs.getDate("planting_date"));
-
-            return flower;
-        };
-    }
-
     public Flower save(Flower flower) {
         if (flower.getFlower_id() == 0) {
-            return add(flower);
+            return insert(flower);
         } else {
             update(flower);
             return flower;
         }
     }
 
-    private Flower add(Flower flower) {
+    public Flower findByFlowerId(long flowerId) {
+        String sql = "SELECT * FROM flowerdetails WHERE flower_id = ?";
+        try {
+            return jdbc.queryForObject(sql, new Object[]{flowerId}, flowerRowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    public List<Flower> findAllFlower() {
+        String sql = "SELECT * FROM flowerdetails";
+        return jdbc.query(sql, flowerRowMapper());
+    }
+
+    public List<Flower> findBySpecies(String species) {
+        String sql = "SELECT * FROM flowerdetails WHERE species = ?";
+        return jdbc.query(sql, flowerRowMapper(), species);
+    }
+
+    public List<Flower> findByColor(String color) {
+        String sql = "SELECT * FROM flowerdetails WHERE color = ?";
+        return jdbc.query(sql, flowerRowMapper(), color);
+    }
+
+    public boolean deleteFlower(long id) {
+        String sql = "DELETE FROM flowerdetails WHERE flower_id = ?";
+        return jdbc.update(sql, id) != 0;
+    }
+
+    public long count() {
+        String sql = "SELECT COUNT(*) FROM flowerdetails";
+        Long count = jdbc.queryForObject(sql, Long.class);
+        return count != null ? count : 0;
+    }
+
+    private Flower insert(Flower flower) {
         String sql = "INSERT INTO flowerdetails (flower_name, species, color, planting_date) VALUES(?, ?, ?, ?)";
-        KeyHolder keyholder = new GeneratedKeyHolder();
+        KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbc.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, flower.getFlowerName());
             ps.setString(2, flower.getSpecies());
             ps.setString(3, flower.getColor() != null ? flower.getColor().getColorName() : null);
-            ps.setDate(4, flower.getPlantingDate() != null ?
-                    new java.sql.Date(flower.getPlantingDate().getTime()) : null);
+            ps.setTimestamp(4, flower.getPlantingDate() != null ? Timestamp.valueOf(flower.getPlantingDate()) : null);
             return ps;
-        }, keyholder);
+        }, keyHolder);
 
         return new Flower(
-                Objects.requireNonNull(keyholder.getKey()).longValue(),
+                Objects.requireNonNull(keyHolder.getKey()).longValue(),
                 flower.getFlowerName(),
                 flower.getSpecies(),
                 flower.getColor(),
@@ -79,40 +99,20 @@ public class FlowerRepository {
                 flower.getFlower_id());
     }
 
+    private RowMapper<Flower> flowerRowMapper() {
+        return (rs, i) -> {
+            Flower flower = new Flower();
+            flower.setFlower_id(rs.getLong("flower_id"));
+            flower.setFlowerName(rs.getString("flower_name"));
+            flower.setSpecies(rs.getString("species"));
 
-    public List<Flower> findAllFlower() {
-        String sql = "SELECT * FROM flowerdetails";
-        return jdbc.query(sql, flowerRowMapper());
-    }
+            String colorStr = rs.getString("color");
+            flower.setColor(colorStr != null ? FlowerColor.valueOf(colorStr.toUpperCase()) : null);
 
-    public Flower findById(long flowerId) {
-        String sql = "SELECT * FROM flowerdetails WHERE flower_id = ?";
+            Timestamp plantingTs = rs.getTimestamp("planting_date");
+            flower.setPlantingDate(plantingTs != null ? plantingTs.toLocalDateTime() : null);
 
-        try {
-            return jdbc.queryForObject(sql, new Object[]{flowerId}, flowerRowMapper());
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
-    }
-
-    public List<Flower> findBySpecies(String species) {
-        String sql = "SELECT * FROM flowerdetails WHERE species = ?";
-        return jdbc.query(sql, flowerRowMapper(), species);
-    }
-
-    public List <Flower> findByColor(FlowerColor color) {
-        String sql = "SELECT * FROM flowerdetails WHERE color = ?";
-        return jdbc.query(sql, flowerRowMapper(), color.getColorName());
-    }
-
-    public boolean deleteFlower(long id) {
-        String sql = "DELETE FROM flowerdetails WHERE flower_id = ?";
-        return jdbc.update(sql, id) != 0;
-    }
-
-    public long count() {
-        String sql = "SELECT COUNT(*) FROM flowerdetails";
-        Long count = jdbc.queryForObject(sql, Long.class);
-        return count != null ? count : 0;
+            return flower;
+        };
     }
 }
