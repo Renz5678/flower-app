@@ -37,4 +37,29 @@ public class FlowerController {
         return ResponseEntity.ok(flower);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<Flower> updateFlower(@PathVariable long id, @RequestBody Flower flower){
+        flower.setFlower_id(id);
+        Flower updatedFlower = flowerService.updateFlower(flower);
+        return ResponseEntity.ok(updatedFlower);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteFlower(@PathVariable long id){
+        flowerService.deleteFlower(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/color")
+    public ResponseEntity<List<Flower>> getFlowersByColor(@RequestParam("name") String color){
+        List<Flower> flowers = flowerService.getByColor(color);
+        return ResponseEntity.ok(flowers);
+    }
+
+    @GetMapping("/species")
+    public ResponseEntity<List<Flower>> getFlowersBySpecies(@RequestParam("name")String species){
+        List<Flower> flowers = flowerService.getBySpecies(species);
+        return ResponseEntity.ok(flowers);
+    }
+
 }
