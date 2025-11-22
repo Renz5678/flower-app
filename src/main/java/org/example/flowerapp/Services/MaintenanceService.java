@@ -1,8 +1,6 @@
 package org.example.flowerapp.Services;
 
 import org.example.flowerapp.Models.Enums.MaintenanceType;
-import org.example.flowerapp.Exceptions.EntityNotFoundExceptions.MaintenanceNotFoundException;
-import org.example.flowerapp.Models.Flower;
 import org.example.flowerapp.Models.Maintenance;
 import org.example.flowerapp.Repository.MaintenanceRepository;
 import org.example.flowerapp.Utils.Validators.MaintenanceValidator;
@@ -15,26 +13,27 @@ import java.util.List;
 public class MaintenanceService {
     
     private final MaintenanceRepository maintenanceRepository;
-
-    public MaintenanceService(MaintenanceRepository maintenanceRepository){
+    private final FlowerService flowerService;
+    
+    public MaintenanceService(MaintenanceRepository maintenanceRepository, FlowerService flowerService){
         this.maintenanceRepository = maintenanceRepository;
+        this.flowerService = flowerService;
     }
 
     public Maintenance addMaintenanceTask(Maintenance maintenance) {
+        MaintenanceValidator.validateMaintenanceTask(maintenance);
+        
+        long flowerId = maintenance.getFlower().getFlower_id();
+        flowerService.getFlowerById(flowerId);
+
         if (maintenance.getCreatedAt() == null) {
             maintenance.setCreatedAt(LocalDateTime.now());
         }
-        
         return maintenanceRepository.save(maintenance);
     }
 
     public Maintenance getTaskById(long id) {
-        Maintenance m = maintenanceRepository.findByTaskId(id);
-
-        if (m == null) {
-            throw new MaintenanceNotFoundException(id);
-        }
-        return m;
+        return maintenanceRepository.findByTaskId(id);
     }
 
     public List<Maintenance> getAllTasks() {
@@ -64,8 +63,13 @@ public class MaintenanceService {
         return maintenanceRepository.save(existingTask);
     }
 
-    public List<Maintenance> getTasksByFlower(Flower flower) {
-        return maintenanceRepository.findByFlowerId(flower.getFlower_id());
+    public boolean deleteMaintenance(long id) {
+        getTaskById(id); 
+        return maintenanceRepository.deleteMaintenance(id);
+    }
+
+    public List<Maintenance> getTasksByFlower(long flowerId) {
+        return maintenanceRepository.findByFlowerId(flowerId); 
     }
 
     public List<Maintenance> getTasksByType(MaintenanceType type) {
