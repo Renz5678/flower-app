@@ -34,7 +34,7 @@ public class FlowerController {
     @GetMapping("/{id}")
     public ResponseEntity<Flower> getFlowerById(@PathVariable long id){
         Flower flower = flowerService.getFlowerById(id);
-        return ResponseEntity.ok{flower};
+        return ResponseEntity.ok(flower);
     }
 
 }
