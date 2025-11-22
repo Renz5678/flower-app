@@ -1,4 +1,4 @@
-package org.example.flowerapp.Controllers;
+package org.example.flowerapp.Controller;
 
 import org.example.flowerapp.Models.Maintenance;
 import org.example.flowerapp.Services.MaintenanceService;
