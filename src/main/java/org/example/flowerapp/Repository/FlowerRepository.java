@@ -42,6 +42,20 @@ public class FlowerRepository {
         }
     }
 
+    public boolean existsByName(String flowerName) {
+        String sql = "SEELCT * FROM flowerdetails WHERE flower_name = ?";
+        Integer count = jdbc.queryForObject(sql, Integer.class, flowerName);
+
+        return count != null && count > 0;
+    }
+
+    public boolean existsById(long id) {
+        String sql = "SEELCT * FROM flowerdetails WHERE flower_id = ?";
+        Integer count = jdbc.queryForObject(sql, Integer.class, id);
+
+        return count != null && count > 0;
+    }
+
     public List<Flower> findAllFlower() {
         String sql = "SELECT * FROM flowerdetails";
         return jdbc.query(sql, flowerRowMapper());
