@@ -115,7 +115,7 @@ public class FlowerService {
         flowerResponseDTO.setFlowerName(flower.getFlowerName());
         flowerResponseDTO.setSpecies(flower.getSpecies());
         flowerResponseDTO.setColor(flower.getColor());
-        flowerResponseDTO.setPlantingdate(flower.getPlantingDate());
+        flowerResponseDTO.setPlantingDate(flower.getPlantingDate());
 
         return flowerResponseDTO;
     }
