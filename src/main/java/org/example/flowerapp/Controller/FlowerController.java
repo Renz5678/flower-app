@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/flowers")
+@RequestMapping("/flowers")
 @RequiredArgsConstructor
 public class FlowerController {
 
@@ -30,7 +30,7 @@ public class FlowerController {
         return ResponseEntity.ok(flowers);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{flower_id}")
     public ResponseEntity<FlowerResponseDTO> getFlowerById(@PathVariable long id) {
         FlowerResponseDTO flower = flowerService.getFlowerById(id);
         return ResponseEntity.ok(flower);
@@ -48,14 +48,14 @@ public class FlowerController {
         return ResponseEntity.ok(flowers);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{flower_id}")
     public ResponseEntity<FlowerResponseDTO> updateFlower(@RequestBody FlowerRequestDTO dto, long id) {
         FlowerResponseDTO updated = flowerService.updateFlower(dto, id);
         return ResponseEntity.ok(updated);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<FlowerResponseDTO> deleteFlower(@RequestBody FlowerRequestDTO dto, long id) {
+    @DeleteMapping("/{flower_id}")
+    public ResponseEntity<FlowerResponseDTO> deleteFlower(long id) {
         flowerService.deleteFlower(id);
         return ResponseEntity.noContent().build();
     }
