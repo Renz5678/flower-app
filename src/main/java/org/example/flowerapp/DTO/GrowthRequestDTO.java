@@ -1,22 +1,20 @@
 package org.example.flowerapp.DTO;
 
-import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import org.example.flowerapp.Models.Enums.GrowthStage;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class GrowthRequestDTO {
-    private long flower_id;
+public record GrowthRequestDTO(
+        @NotNull(message = "Flower ID is required!")
+        Long flower_id,
 
-    private GrowthStage stage;
+        @NotNull(message = "Growth stage is required!")
+        GrowthStage stage,
 
-    @NotBlank(message="Height is required!")
-    private double height;
+        @Positive(message = "Height must be a positive number!")
+        double height,
 
-    private boolean colorChanges;
-    private String notes;
-}
+        boolean colorChanges,
+
+        String notes
+) {}

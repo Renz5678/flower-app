@@ -38,7 +38,7 @@ public class GrowthRepository {
     public Growth findByGrowthId(long id) {
         String sql = "SELECT * FROM growthdetails WHERE growth_id = ?";
         try {
-            return jdbc.queryForObject(sql, new Object[]{id}, growthRowMapper());
+            return jdbc.queryForObject(sql, growthRowMapper(), id);
         } catch (EmptyResultDataAccessException e) {
             throw new GrowthNotFoundException(id);
         }
@@ -47,11 +47,6 @@ public class GrowthRepository {
     public List<Growth> findAllGrowth() {
         String sql = "SELECT * FROM growthdetails";
         return jdbc.query(sql, growthRowMapper());
-    }
-
-    public List<Growth> findByFlowerId(long flowerId) {
-        String sql = "SELECT * FROM growthdetails WHERE flower_id = ?";
-        return jdbc.query(sql, growthRowMapper(), flowerId);
     }
 
     public List<Growth> findByStage(GrowthStage stage) {
@@ -64,14 +59,12 @@ public class GrowthRepository {
         return jdbc.query(sql, growthRowMapper(), colorChanges);
     }
 
-    public boolean deleteGrowth(long id) {
+    public void deleteGrowth(long id) {
         String sql = "DELETE FROM growthdetails WHERE growth_id = ?";
         int rowsAffected = jdbc.update(sql, id);
         if (rowsAffected == 0) {
             throw new GrowthNotFoundException(id);
         }
-
-        return true;
     }
 
     private Growth insert(Growth growth) {

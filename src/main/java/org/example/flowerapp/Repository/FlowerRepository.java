@@ -36,24 +36,29 @@ public class FlowerRepository {
     public Flower findByFlowerId(long flowerId) {
         String sql = "SELECT * FROM flowerdetails WHERE flower_id = ?";
         try {
-            return jdbc.queryForObject(sql, new Object[]{flowerId}, flowerRowMapper());
+            return jdbc.queryForObject(sql, flowerRowMapper(), flowerId);
         } catch (EmptyResultDataAccessException e) {
-            throw new FlowerNotFoundException(flowerId);
+            throw new FlowerNotFoundException(flowerId); 
         }
     }
 
     public boolean existsByName(String flowerName) {
-        String sql = "SEELCT * FROM flowerdetails WHERE flower_name = ?";
+        String sql = "SELECT * FROM flowerdetails WHERE flower_name = ?";
         Integer count = jdbc.queryForObject(sql, Integer.class, flowerName);
 
         return count != null && count > 0;
     }
 
     public boolean existsById(long id) {
-        String sql = "SEELCT * FROM flowerdetails WHERE flower_id = ?";
+        String sql = "SELECT COUNT(*) FROM flowerdetails WHERE flower_id = ?";
         Integer count = jdbc.queryForObject(sql, Integer.class, id);
+        return count == null || count <= 0;
+    }
 
-        return count != null && count > 0;
+    public void validateExists(long id) {
+        if (existsById(id)) {
+            throw new FlowerNotFoundException("Flower with id " + id + " not found");
+        }
     }
 
     public List<Flower> findAllFlower() {

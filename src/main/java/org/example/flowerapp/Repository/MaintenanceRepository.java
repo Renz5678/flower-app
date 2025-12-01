@@ -40,7 +40,7 @@ public class MaintenanceRepository {
     public Maintenance findByTaskId(long taskId) {
         String sql = "SELECT * FROM maintenance WHERE task_id = ?";
         try {
-            return jdbc.queryForObject(sql, new Object[]{taskId}, maintenanceRowMapper());
+            return jdbc.queryForObject(sql, maintenanceRowMapper(), taskId);
         } catch (EmptyResultDataAccessException e) {
             throw new MaintenanceNotFoundException(taskId);
         }

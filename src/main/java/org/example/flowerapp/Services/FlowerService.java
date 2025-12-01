@@ -1,34 +1,32 @@
 package org.example.flowerapp.Services;
 
+import lombok.RequiredArgsConstructor;
 import org.example.flowerapp.DTO.FlowerRequestDTO;
 import org.example.flowerapp.DTO.FlowerResponseDTO;
 import org.example.flowerapp.Exceptions.BusinessLogicExceptions.DuplicateFlowerException;
 import org.example.flowerapp.Exceptions.EntityNotFoundExceptions.FlowerNotFoundException;
-import org.example.flowerapp.Exceptions.ValidationExceptions.InvalidFlowerDataException;
 import org.example.flowerapp.Models.Flower;
 import org.example.flowerapp.Repository.FlowerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class FlowerService {
 
-    @Autowired
-    private FlowerRepository flowerRepository;
+    private final FlowerRepository flowerRepository;
 
     @Transactional
     public FlowerResponseDTO addNewFlower(FlowerRequestDTO dto) {
-        validateFlowerName(dto.getFlowerName());
-        checkDuplicateFlowerName(dto.getFlowerName());
+        checkDuplicateFlowerName(dto.flowerName());
 
         Flower flower = new Flower();
-        flower.setFlowerName(dto.getFlowerName());
-        flower.setSpecies(dto.getSpecies());
-        flower.setColor(dto.getColor());
-        flower.setPlantingDate(dto.getPlantingDate());
+        flower.setFlowerName(dto.flowerName());
+        flower.setSpecies(dto.species());
+        flower.setColor(dto.color());
+        flower.setPlantingDate(dto.plantingDate());
 
         Flower saved = flowerRepository.save(flower);
 
@@ -39,17 +37,15 @@ public class FlowerService {
     public FlowerResponseDTO updateFlower(FlowerRequestDTO dto, long id) {
         Flower flower = findFlowerByIdOrThrow(id);
 
-        validateFlowerName(dto.getFlowerName());
-
         // Check for duplicate name only if the name is being changed
-        if (!flower.getFlowerName().equals(dto.getFlowerName())) {
-            checkDuplicateFlowerName(dto.getFlowerName());
+        if (!flower.getFlowerName().equals(dto.flowerName())) {
+            checkDuplicateFlowerName(dto.flowerName());
         }
 
-        flower.setFlowerName(dto.getFlowerName());
-        flower.setSpecies(dto.getSpecies());
-        flower.setColor(dto.getColor());
-        flower.setPlantingDate(dto.getPlantingDate());
+        flower.setFlowerName(dto.flowerName());
+        flower.setSpecies(dto.species());
+        flower.setColor(dto.color());
+        flower.setPlantingDate(dto.plantingDate());
 
         Flower updated = flowerRepository.save(flower);
 
@@ -88,12 +84,6 @@ public class FlowerService {
         flowerRepository.deleteFlower(id);
     }
 
-    private void validateFlowerName(String flowerName) {
-        if (flowerName == null || flowerName.isBlank()) {
-            throw new InvalidFlowerDataException("Flower name is required!");
-        }
-    }
-
     private void checkDuplicateFlowerName(String flowerName) {
         if (flowerRepository.existsByName(flowerName)) {
             throw new DuplicateFlowerException("Flower name already exists!");
@@ -101,22 +91,17 @@ public class FlowerService {
     }
 
     private Flower findFlowerByIdOrThrow(long id) {
-        Flower flower = flowerRepository.findByFlowerId(id);
-        if (flower == null) {
-            throw new FlowerNotFoundException("Flower with id " + id + " not found");
-        }
-        return flower;
+        flowerRepository.validateExists(id);
+        return flowerRepository.findByFlowerId(id);
     }
 
     private FlowerResponseDTO mapToResponseDTO(Flower flower) {
-        FlowerResponseDTO flowerResponseDTO = new FlowerResponseDTO();
-
-        flowerResponseDTO.setFlower_id(flower.getFlower_id());
-        flowerResponseDTO.setFlowerName(flower.getFlowerName());
-        flowerResponseDTO.setSpecies(flower.getSpecies());
-        flowerResponseDTO.setColor(flower.getColor());
-        flowerResponseDTO.setPlantingDate(flower.getPlantingDate());
-
-        return flowerResponseDTO;
+        return new FlowerResponseDTO(
+                flower.getFlower_id(),
+                flower.getFlowerName(),
+                flower.getSpecies(),
+                flower.getColor(),
+                flower.getPlantingDate()
+        );
     }
 }

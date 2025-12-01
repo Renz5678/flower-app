@@ -1,6 +1,5 @@
 package org.example.flowerapp.Controller;
 
-import lombok.NonNull;
 import org.example.flowerapp.Exceptions.BusinessLogicExceptions.DuplicateFlowerException;
 import org.example.flowerapp.Exceptions.BusinessLogicExceptions.FlowerHasDependenciesException;
 import org.example.flowerapp.Exceptions.DatabaseOperationExceptions.DatabaseOperationException;
@@ -15,118 +14,49 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
 public class ExceptionController {
-    @ExceptionHandler(FlowerNotFoundException.class)
-    public ResponseEntity<@NonNull ErrorResponse> handleFlowerNotFoundException(
-            FlowerNotFoundException e, WebRequest request) {
-        ErrorResponse error = new ErrorResponse(
-                HttpStatus.NOT_FOUND.value(),
-                e.getMessage(),
-                LocalDateTime.now()
-        );
 
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    @ExceptionHandler({
+            FlowerNotFoundException.class,
+            MaintenanceNotFoundException.class,
+            GrowthNotFoundException.class
+    })
+    public ResponseEntity<ErrorResponse> handleNotFoundException(RuntimeException e) {
+        return buildErrorResponse(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(MaintenanceNotFoundException.class)
-    public ResponseEntity<@NonNull ErrorResponse> handleMaintenanceNotFoundException(
-            MaintenanceNotFoundException e, WebRequest request) {
-        ErrorResponse error = new ErrorResponse(
-          HttpStatus.NOT_FOUND.value(),
-          e.getMessage(),
-          LocalDateTime.now()
-        );
-
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    @ExceptionHandler({
+            InvalidFlowerDataException.class,
+            InvalidMaintenanceDataException.class,
+            InvalidGrowthDataException.class
+    })
+    public ResponseEntity<ErrorResponse> handleValidationException(RuntimeException e) {
+        return buildErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(GrowthNotFoundException.class)
-    public ResponseEntity<@NonNull ErrorResponse> handleGrowthNotFoundException(
-            GrowthNotFoundException e, WebRequest request) {
-        ErrorResponse error = new ErrorResponse(
-                HttpStatus.NOT_FOUND.value(),
-                e.getMessage(),
-                LocalDateTime.now()
-        );
-
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(InvalidFlowerDataException.class)
-    public ResponseEntity<@NonNull ErrorResponse> handleInvalidFlowerDataException(
-            InvalidFlowerDataException e, WebRequest request) {
-        ErrorResponse error = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                e.getMessage(),
-                LocalDateTime.now()
-        );
-
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(InvalidMaintenanceDataException.class)
-    public ResponseEntity<@NonNull ErrorResponse> handleInvalidMaintenanceDataException(
-            InvalidMaintenanceDataException e, WebRequest request) {
-        ErrorResponse error = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                e.getMessage(),
-                LocalDateTime.now()
-        );
-
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(InvalidGrowthDataException.class)
-    public ResponseEntity<@NonNull ErrorResponse> handleInvalidGrowthDataException(
-            InvalidGrowthDataException e, WebRequest request) {
-        ErrorResponse error = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                e.getMessage(),
-                LocalDateTime.now()
-        );
-
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    @ExceptionHandler({
+            DuplicateFlowerException.class,
+            FlowerHasDependenciesException.class
+    })
+    public ResponseEntity<ErrorResponse> handleConflictException(RuntimeException e) {
+        return buildErrorResponse(e.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(DatabaseOperationException.class)
-    public ResponseEntity<@NonNull ErrorResponse> handleDatabaseOperationException(
-            DatabaseOperationException e, WebRequest request) {
-        ErrorResponse error = new ErrorResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                e.getMessage(),
-                LocalDateTime.now()
-        );
-
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<ErrorResponse> handleDatabaseException(DatabaseOperationException e) {
+        return buildErrorResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(DuplicateFlowerException.class)
-    public ResponseEntity<@NonNull ErrorResponse> handleDuplicateFlowerException(
-            DuplicateFlowerException e, WebRequest request) {
+    private ResponseEntity<ErrorResponse> buildErrorResponse(String message, HttpStatus status) {
         ErrorResponse error = new ErrorResponse(
-                HttpStatus.CONFLICT.value(),
-                e.getMessage(),
+                status.value(),
+                message,
                 LocalDateTime.now()
         );
-
-        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+        return ResponseEntity.status(status).body(error);
     }
-
-    @ExceptionHandler(FlowerHasDependenciesException.class)
-    public ResponseEntity<@NonNull ErrorResponse> handleFlowerHasDependenciesException(
-            FlowerHasDependenciesException e, WebRequest request) {
-        ErrorResponse error = new ErrorResponse(
-                HttpStatus.CONFLICT.value(),
-                e.getMessage(),
-                LocalDateTime.now()
-        );
-
-        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
-    }
-
 }

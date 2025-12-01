@@ -1,22 +1,20 @@
 package org.example.flowerapp.DTO;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotNull;
 import org.example.flowerapp.Models.Enums.FlowerColor;
 
 import java.time.LocalDateTime;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class FlowerRequestDTO {
+public record FlowerRequestDTO (
+        @NotBlank(message = "Flower name is required")
+        String flowerName,
 
-    @NotBlank(message="Flower name is required")
-    private String flowerName;
+        @NotBlank(message = "Species field must be indicated!")
+        String species,
 
-    private String species;
-    private FlowerColor color;
-    private LocalDateTime plantingDate;
+        @NotNull(message = "Enter a color!")
+        FlowerColor color,
+
+        LocalDateTime plantingDate) {
 }

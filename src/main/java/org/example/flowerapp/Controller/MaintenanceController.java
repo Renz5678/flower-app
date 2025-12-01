@@ -1,5 +1,6 @@
 package org.example.flowerapp.Controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.flowerapp.DTO.MaintenanceRequestDTO;
 import org.example.flowerapp.DTO.MaintenanceResponseDTO;
@@ -19,7 +20,8 @@ public class MaintenanceController {
     private final MaintenanceService maintenanceService;
 
     @PostMapping
-    public ResponseEntity<MaintenanceResponseDTO> createNewMaintenance(@RequestBody MaintenanceRequestDTO dto) {
+    public ResponseEntity<  MaintenanceResponseDTO> createNewMaintenance(
+            @Valid @RequestBody MaintenanceRequestDTO dto) {
         MaintenanceResponseDTO created = maintenanceService.addNewMaintenance(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
@@ -30,39 +32,46 @@ public class MaintenanceController {
         return ResponseEntity.ok(maintenances);
     }
 
-    @GetMapping("/{task_id}")
-    public ResponseEntity<MaintenanceResponseDTO> getMaintenanceById(@RequestBody long id) {
-        MaintenanceResponseDTO maintenance = maintenanceService.getMaintenanceById(id);
+    @GetMapping("/task/{task_id}")
+    public ResponseEntity<MaintenanceResponseDTO> getMaintenanceById(
+            @PathVariable("task_id") long taskId) {
+        MaintenanceResponseDTO maintenance = maintenanceService.getMaintenanceById(taskId);
         return ResponseEntity.ok(maintenance);
     }
 
-    @GetMapping("/{flower_id}")
-    public ResponseEntity<List<MaintenanceResponseDTO>> getMaintenanceByFlowerId(@RequestBody long id) {
-        List<MaintenanceResponseDTO> maintenances = maintenanceService.getMaintenanceByFlowerId(id);
+    @GetMapping("/flower/{flower_id}")
+    public ResponseEntity<List<MaintenanceResponseDTO>> getMaintenanceByFlowerId(
+            @PathVariable("flower_id") long flowerId) {
+        List<MaintenanceResponseDTO> maintenances = maintenanceService.getMaintenanceByFlowerId(flowerId);
         return ResponseEntity.ok(maintenances);
     }
 
-    @GetMapping("/{maintenance_type}")
-    public ResponseEntity<List<MaintenanceResponseDTO>> getMaintenanceByType(@RequestBody MaintenanceType maintenanceType) {
+    @GetMapping("/type/{maintenance_type}")
+    public ResponseEntity<List<MaintenanceResponseDTO>> getMaintenanceByType(
+            @PathVariable("maintenance_type") MaintenanceType maintenanceType) {
         List<MaintenanceResponseDTO> maintenances = maintenanceService.getMaintenanceByType(maintenanceType);
         return ResponseEntity.ok(maintenances);
     }
 
-    @GetMapping("/{maintenance_date}")
-    public ResponseEntity<List<MaintenanceResponseDTO>> getMaintenanceByDate(@RequestBody LocalDateTime maintenanceDate) {
+    @GetMapping("/date")
+    public ResponseEntity<List<MaintenanceResponseDTO>> getMaintenanceByDate(
+            @RequestParam LocalDateTime maintenanceDate) {
         List<MaintenanceResponseDTO> maintenances = maintenanceService.getMaintenanceByDate(maintenanceDate);
         return ResponseEntity.ok(maintenances);
     }
 
     @PutMapping("/{maintenance_id}")
-    public ResponseEntity<MaintenanceResponseDTO> updateMaintenance(@RequestBody MaintenanceRequestDTO dto, long id) {
-        MaintenanceResponseDTO updated = maintenanceService.updateMaintenance(dto, id);
+    public ResponseEntity<MaintenanceResponseDTO> updateMaintenance(
+            @Valid @RequestBody MaintenanceRequestDTO dto,
+            @PathVariable("maintenance_id") long maintenanceId) {
+        MaintenanceResponseDTO updated = maintenanceService.updateMaintenance(dto, maintenanceId);
         return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{maintenance_id}")
-    public ResponseEntity<MaintenanceResponseDTO> deleteMaintenance(long id) {
-        maintenanceService.deleteMaintenance(id);
+    public ResponseEntity<Void> deleteMaintenance(
+            @PathVariable("maintenance_id") long maintenanceId) {
+        maintenanceService.deleteMaintenance(maintenanceId);
         return ResponseEntity.noContent().build();
     }
 }

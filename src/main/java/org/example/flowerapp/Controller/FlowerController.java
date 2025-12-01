@@ -1,10 +1,10 @@
 package org.example.flowerapp.Controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.flowerapp.DTO.FlowerRequestDTO;
 import org.example.flowerapp.DTO.FlowerResponseDTO;
 import org.example.flowerapp.Services.FlowerService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +19,7 @@ public class FlowerController {
     private final FlowerService flowerService;
 
     @PostMapping
-    public ResponseEntity<FlowerResponseDTO> createFlower(@RequestBody FlowerRequestDTO dto) {
+    public ResponseEntity<FlowerResponseDTO> createFlower(@Valid @RequestBody FlowerRequestDTO dto) {
         FlowerResponseDTO created = flowerService.addNewFlower(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
@@ -31,8 +31,8 @@ public class FlowerController {
     }
 
     @GetMapping("/{flower_id}")
-    public ResponseEntity<FlowerResponseDTO> getFlowerById(@PathVariable long id) {
-        FlowerResponseDTO flower = flowerService.getFlowerById(id);
+    public ResponseEntity<FlowerResponseDTO> getFlowerById(@PathVariable("flower_id") long flowerId) {
+        FlowerResponseDTO flower = flowerService.getFlowerById(flowerId);
         return ResponseEntity.ok(flower);
     }
 
@@ -49,14 +49,16 @@ public class FlowerController {
     }
 
     @PutMapping("/{flower_id}")
-    public ResponseEntity<FlowerResponseDTO> updateFlower(@RequestBody FlowerRequestDTO dto, long id) {
-        FlowerResponseDTO updated = flowerService.updateFlower(dto, id);
+    public ResponseEntity<FlowerResponseDTO> updateFlower(
+            @Valid @RequestBody FlowerRequestDTO dto,
+            @PathVariable("flower_id") long flowerId) {
+        FlowerResponseDTO updated = flowerService.updateFlower(dto, flowerId);
         return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{flower_id}")
-    public ResponseEntity<FlowerResponseDTO> deleteFlower(long id) {
-        flowerService.deleteFlower(id);
+    public ResponseEntity<Void> deleteFlower(@PathVariable("flower_id") long flowerId) {
+        flowerService.deleteFlower(flowerId);
         return ResponseEntity.noContent().build();
     }
 }
