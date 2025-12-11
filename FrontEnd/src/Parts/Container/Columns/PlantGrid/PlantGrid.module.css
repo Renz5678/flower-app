@@ -1,0 +1,12 @@
+.grid {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 5.5rem;
+}
+
+.grid img {
+    width: 65%;
+}
